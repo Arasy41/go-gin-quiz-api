@@ -3,8 +3,8 @@ package db
 import (
 	"log"
 
+	"github.com/Arasy41/go-gin-quiz-api/config"
 	"github.com/Arasy41/go-gin-quiz-api/internal/domain/models"
-	"github.com/Arasy41/go-gin-quiz-api/pkg/config"
 )
 
 // InitDB initializes the database connection using the configuration provided.

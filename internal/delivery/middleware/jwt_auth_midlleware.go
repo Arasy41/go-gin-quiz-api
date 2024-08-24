@@ -1,17 +1,13 @@
 package middleware
 
 import (
-	"errors"
 	"net/http"
 
 	"github.com/Arasy41/go-gin-quiz-api/internal/domain/models"
-	"github.com/Arasy41/go-gin-quiz-api/pkg/config"
 	"github.com/Arasy41/go-gin-quiz-api/pkg/jwt"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
-
-var jwtKey = []byte(config.AppConfig.SecretKey)
 
 func JwtAuthMiddleware(allowedRoles ...string) gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -48,8 +44,7 @@ func JwtAuthMiddleware(allowedRoles ...string) gin.HandlerFunc {
 			}
 		}
 
-		roleError := errors.New("sorry, your role cannot access this route")
-		c.String(http.StatusForbidden, roleError.Error())
+		c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden access"})
 		c.Abort()
 	}
 }

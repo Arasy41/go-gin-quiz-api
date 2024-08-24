@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/Arasy41/go-gin-quiz-api/pkg/config"
+	"github.com/Arasy41/go-gin-quiz-api/config"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"

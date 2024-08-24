@@ -3,10 +3,10 @@ package main
 import (
 	"log"
 
-	"github.com/Arasy41/go-gin-quiz-api/pkg/config"
+	"github.com/Arasy41/go-gin-quiz-api/config"
+	"github.com/Arasy41/go-gin-quiz-api/internal/delivery/router"
 	"github.com/Arasy41/go-gin-quiz-api/pkg/db"
 	"github.com/Arasy41/go-gin-quiz-api/pkg/helper"
-	"github.com/Arasy41/go-gin-quiz-api/pkg/router"
 	"github.com/gin-gonic/gin"
 )
 
@@ -22,7 +22,7 @@ import (
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 
-// @host religious-mitzi-arasycorp-cc5d6628.koyeb.app
+// @host localhost:8080
 // @BasePath /api
 
 // @securityDefinitions.apikey ApiKeyAuth
