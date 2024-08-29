@@ -22,9 +22,7 @@ type Config struct {
 	TokenLifespan int
 }
 
-var AppConfig *Config
-
-func InitConfig() {
+func InitConfig() *Config {
 	viper.SetConfigFile(".env")
 
 	err := viper.ReadInConfig()
@@ -32,7 +30,7 @@ func InitConfig() {
 		log.Fatalf("Error loading .env file: %v", err)
 	}
 
-	AppConfig = &Config{
+	return &Config{
 		Host:        viper.GetString("HOST"),
 		Environment: viper.GetString("ENVIRONMENT"),
 		Port:        viper.GetString("PORT"),

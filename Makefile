@@ -22,8 +22,8 @@ run: build
 	@echo "Running the application on port $(PORT)..."
 	@./$(APP_NAME)
 
-# Run the application
-run-dev:
+# Run the application without build
+go-run:
 	@echo "Running the application on port $(PORT)..."
 	@go run cmd/api/main.go
 

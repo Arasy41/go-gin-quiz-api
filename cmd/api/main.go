@@ -6,7 +6,6 @@ import (
 	"github.com/Arasy41/go-gin-quiz-api/config"
 	"github.com/Arasy41/go-gin-quiz-api/internal/delivery/router"
 	"github.com/Arasy41/go-gin-quiz-api/pkg/db"
-	"github.com/Arasy41/go-gin-quiz-api/pkg/helper"
 	"github.com/gin-gonic/gin"
 )
 
@@ -29,22 +28,23 @@ import (
 // @in header
 // @name Authorization
 func main() {
-	config.InitConfig()
-	db.InitDB(config.AppConfig)
+	cfg := config.InitConfig()
+	db.InitDB(cfg)
 
-	environment := helper.Getenv("ENVIRONMENT", "development")
-	if environment == "development" {
-		gin.SetMode(gin.DebugMode)
-	}
-
-	if environment == "production" {
-		gin.SetMode(gin.ReleaseMode)
-	}
+	environment := config.InitConfig().Environment
+	log.Println(environment)
 
 	// Initialize router and start the server
-	r := router.InitRouter()
+	r := router.InitRouter(db.DB)
+	if environment == "production" {
+		gin.SetMode(gin.ReleaseMode)
+		r.RunTLS(":"+config.InitConfig().Port, "cert.pem", "key.pem")
+	}
 
-	if err := r.Run(":" + config.AppConfig.Port); err != nil {
-		log.Fatal("Failed to run server:", err)
+	if environment == "development" {
+		gin.SetMode(gin.DebugMode)
+		if err := r.Run(":" + config.InitConfig().Port); err != nil {
+			log.Fatal("Failed to run server:", err)
+		}
 	}
 }
