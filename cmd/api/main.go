@@ -6,44 +6,37 @@ import (
 	"github.com/Arasy41/go-gin-quiz-api/config"
 	"github.com/Arasy41/go-gin-quiz-api/internal/delivery/router"
 	"github.com/Arasy41/go-gin-quiz-api/pkg/db"
+	"github.com/Arasy41/go-gin-quiz-api/pkg/logger"
 	"github.com/gin-gonic/gin"
 )
 
-// @title API Culinary Review
-// @version 1.0
-// @description This is a sample server for culinary review API.
-// @termsOfService http://swagger.io/terms/
-
-// @contact.name Arasy41
-// @contact.url http://www.swagger.io/support
-// @contact.email support@swagger.io
-
-// @license.name Apache 2.0
-// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
-
-// @host localhost:8080
-// @BasePath /api
-
-// @securityDefinitions.apikey ApiKeyAuth
-// @in header
-// @name Authorization
 func main() {
+	// Inisialisasi logger dengan file log di dalam folder logs
+	if err := logger.InitLogger("logs/app.log"); err != nil {
+		log.Fatalf("Failed to initialize logger: %v", err)
+	}
+	defer logger.CloseLogger()
+
+	// Setup close handler untuk menangani signal SIGINT/SIGTERM
+	logger.SetupCloseHandler()
+
+	// Inisialisasi konfigurasi dan database
 	cfg := config.InitConfig()
 	db.InitDB(cfg)
 
-	environment := config.InitConfig().Environment
-	log.Println(environment)
+	// Initialize Environment
+	environment := cfg.Environment
 
 	// Initialize router and start the server
 	r := router.InitRouter(db.DB)
 	if environment == "production" {
 		gin.SetMode(gin.ReleaseMode)
-		r.RunTLS(":"+config.InitConfig().Port, "cert.pem", "key.pem")
-	}
-
-	if environment == "development" {
+		if err := r.RunTLS(":"+cfg.Port, "cert.pem", "key.pem"); err != nil {
+			log.Fatal("Failed to run server with TLS:", err)
+		}
+	} else if environment == "development" {
 		gin.SetMode(gin.DebugMode)
-		if err := r.Run(":" + config.InitConfig().Port); err != nil {
+		if err := r.Run(":" + cfg.Port); err != nil {
 			log.Fatal("Failed to run server:", err)
 		}
 	}

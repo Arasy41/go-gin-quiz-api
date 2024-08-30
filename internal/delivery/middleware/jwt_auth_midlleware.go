@@ -9,7 +9,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func JwtAuthMiddleware(allowedRoles ...string) gin.HandlerFunc {
+func JwtAuthMiddleware(db *gorm.DB, allowedRoles ...string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		err := jwt.TokenValid(c)
 		if err != nil {
@@ -26,7 +26,6 @@ func JwtAuthMiddleware(allowedRoles ...string) gin.HandlerFunc {
 		}
 
 		var user models.User
-		db := c.MustGet("db").(*gorm.DB)
 		findUserErr := db.Preload("Role").Where("id = ?", userId).First(&user).Error
 		if findUserErr != nil {
 			c.String(http.StatusUnauthorized, findUserErr.Error())

@@ -12,7 +12,7 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 )
 
-var API_SECRET = config.AppConfig.SecretKey
+var secretAPI = ([]byte(config.InitConfig().SecretKey))
 
 func GenerateToken(user_id, role_id uint) (string, error) {
 	token_lifespan, err := strconv.Atoi(helper.Getenv("TOKEN_HOUR_LIFESPAN", "1"))
@@ -30,7 +30,7 @@ func GenerateToken(user_id, role_id uint) (string, error) {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-	return token.SignedString([]byte(API_SECRET))
+	return token.SignedString(secretAPI)
 
 }
 
@@ -40,7 +40,7 @@ func TokenValid(c *gin.Context) error {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
-		return []byte(API_SECRET), nil
+		return secretAPI, nil
 	})
 	if err != nil {
 		return err
@@ -70,7 +70,7 @@ func ExtractTokenID(c *gin.Context) (uint, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
-		return []byte(API_SECRET), nil
+		return secretAPI, nil
 	})
 	if err != nil {
 		return 0, err

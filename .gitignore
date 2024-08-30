@@ -17,6 +17,9 @@
 # Dependency directories
 vendor/
 
+# Log file
+logs/
+
 # Go workspace file
 go.work
 go.work.sum
