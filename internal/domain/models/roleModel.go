@@ -14,5 +14,5 @@ type Role struct {
 
 	CreatedAt time.Time
 	UpdatedAt time.Time
-	DeletedAt gorm.DeletedAt `gorm:"index" json:"deleted_at"`
+	DeletedAt gorm.DeletedAt `gorm:"index"`
 }
