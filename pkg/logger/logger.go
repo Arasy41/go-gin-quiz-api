@@ -1,21 +1,35 @@
 package logger
 
 import (
+	"fmt"
 	"io"
 	"log"
 	"os"
 	"os/signal"
 	"path/filepath"
 	"syscall"
+	"time"
 )
 
 var (
-	file *os.File
+	file       *os.File
+	currentDay string
 )
 
-func InitLogger(logFilePath string) error {
+func InitLogger(logDir string) error {
+	// Inisialisasi log pertama kali
+	return createLogFile(logDir)
+}
+
+func createLogFile(logDir string) error {
+	// Tentukan nama file log berdasarkan tanggal saat ini
+	today := time.Now().Format("2006-01-02")
+	logFilePath := filepath.Join(logDir, fmt.Sprintf("APP-%s.log", today))
+
+	// Simpan tanggal saat ini
+	currentDay = today
+
 	// Buat folder logs jika belum ada
-	logDir := filepath.Dir(logFilePath)
 	if err := os.MkdirAll(logDir, 0755); err != nil {
 		return err
 	}
@@ -27,18 +41,27 @@ func InitLogger(logFilePath string) error {
 		return err
 	}
 
-	// Set output log ke file
+	// Set output log ke file dan terminal (stdout)
 	multiWriter := io.MultiWriter(file, os.Stdout)
-	os.Stdout = file
-	os.Stderr = file
-
-	// Set output log ke multiWriter
 	log.SetOutput(multiWriter)
-	log.Println("Logger initialized, logging to file and terminal")
+
+	log.Printf("Logger initialized, logging to %s\n", logFilePath)
 	return nil
 }
 
-// CloseLogger menutup file log dan mencatat pesan saat aplikasi berhenti
+// Check if date has changed and rotate log file
+func RotateLogFileIfNeeded(logDir string) error {
+	today := time.Now().Format("2006-01-02")
+	if today != currentDay {
+		// Tanggal sudah berubah, buat file log baru
+		if err := createLogFile(logDir); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// CloseLogger menutup file log
 func CloseLogger() {
 	if file != nil {
 		log.Println("Application shutting down")

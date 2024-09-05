@@ -2,48 +2,51 @@ package middleware
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/Arasy41/go-gin-quiz-api/internal/domain/models"
 	"github.com/Arasy41/go-gin-quiz-api/pkg/jwt"
-	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
+
+	"github.com/gin-gonic/gin"
 )
 
-func JwtAuthMiddleware(db *gorm.DB, allowedRoles ...string) gin.HandlerFunc {
+func JWTAuthMiddleware(db *gorm.DB, allowedRoles ...string) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		err := jwt.TokenValid(c)
-		if err != nil {
-			c.String(http.StatusUnauthorized, err.Error())
+		authHeader := c.GetHeader("Authorization")
+		if authHeader == "" {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization header required"})
 			c.Abort()
 			return
 		}
 
-		userId, err := jwt.ExtractTokenID(c)
+		tokenString := strings.TrimPrefix(authHeader, "Bearer ")
+		claims, err := jwt.ParseToken(tokenString)
 		if err != nil {
-			c.String(http.StatusUnauthorized, err.Error())
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
 			c.Abort()
 			return
 		}
 
+		// Fetch user from database to get the role
 		var user models.User
-		findUserErr := db.Preload("Role").Where("id = ?", userId).First(&user).Error
-		if findUserErr != nil {
-			c.String(http.StatusUnauthorized, findUserErr.Error())
+		if err := db.Preload("Role").Where("id = ?", claims.UserID).First(&user).Error; err != nil {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
 			c.Abort()
 			return
 		}
 
-		// Check if the user's role is allowed to access the route
+		// Check if the user has one of the allowed roles
 		for _, role := range allowedRoles {
-			if role == user.Role.Name || user.Role.Name == "admin" {
-				c.Set("user_id", user.ID)
-				c.Set("user_role", user.Role.Name)
+			if user.Role.Name == role || user.Role.Name == "admin" {
 				c.Next()
 				return
 			}
 		}
 
-		c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden access"})
-		c.Abort()
+		// Set user data in context
+		c.Set("userID", user.ID)
+		c.Set("userRole", user.Role.Name)
+		c.Next()
 	}
 }

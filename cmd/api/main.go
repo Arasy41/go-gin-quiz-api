@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/Arasy41/go-gin-quiz-api/config"
+	"github.com/Arasy41/go-gin-quiz-api/internal/delivery/middleware"
 	"github.com/Arasy41/go-gin-quiz-api/internal/delivery/router"
 	"github.com/Arasy41/go-gin-quiz-api/pkg/db"
 	"github.com/Arasy41/go-gin-quiz-api/pkg/logger"
@@ -12,7 +13,8 @@ import (
 
 func main() {
 	// Inisialisasi logger dengan file log di dalam folder logs
-	if err := logger.InitLogger("logs/app.log"); err != nil {
+	logDir := "logs"
+	if err := logger.InitLogger(logDir); err != nil {
 		log.Fatalf("Failed to initialize logger: %v", err)
 	}
 	defer logger.CloseLogger()
@@ -29,6 +31,11 @@ func main() {
 
 	// Initialize router and start the server
 	r := router.InitRouter(db.DB)
+
+	// Middleware for logging request
+	r.Use(middleware.RequestLogger())
+
+	// Run server
 	if environment == "production" {
 		gin.SetMode(gin.ReleaseMode)
 		if err := r.RunTLS(":"+cfg.Port, "cert.pem", "key.pem"); err != nil {
