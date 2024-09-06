@@ -2,15 +2,15 @@ package constant
 
 // User Roles
 const (
-	RoleAdmin       = "admin"
-	RoleUser        = "user"
-	RoleModerator   = "moderator"
-	RoleUserID      = 12010
-	RoleAdminID     = 12020
-	RoleModeratorID = 12030
+	RoleAdmin     = "admin"
+	RoleStudent   = "student"
+	RoleTeacher   = "teacher"
+	RoleAdminID   = 111
+	RoleStudentID = 222
+	RoleTeacherID = 333
 )
 
-var AllRoles = []string{RoleAdmin, RoleUser, RoleModerator}
+var AllRoles = []string{RoleAdmin, RoleStudent, RoleTeacher}
 
 // Content-Type and Header Keys
 const (
