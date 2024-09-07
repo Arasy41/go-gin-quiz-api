@@ -15,7 +15,7 @@ type RoleUsecase interface {
 	DeleteRole(role *models.Role) error
 	GetRoleByID(id uint) (*models.Role, error)
 	GetRoleByName(rolename string) (*models.Role, error)
-	GetAllRoles() ([]models.Role, error)
+	GetAllRoles() ([]models.RoleList, error)
 }
 
 type roleUsecase struct {
@@ -64,6 +64,18 @@ func (u *roleUsecase) GetRoleByName(rolename string) (*models.Role, error) {
 	return u.roleRepo.FindRoleByName(rolename)
 }
 
-func (u *roleUsecase) GetAllRoles() ([]models.Role, error) {
-	return u.roleRepo.FindAllRoles()
+func (u *roleUsecase) GetAllRoles() ([]models.RoleList, error) {
+	user, err := u.roleRepo.FindAllRoles()
+	if err != nil {
+		return nil, err
+	}
+
+	roles := []models.RoleList{}
+	for _, r := range user {
+		roles = append(roles, models.RoleList{
+			ID:   r.ID,
+			Name: r.Name,
+		})
+	}
+	return roles, nil
 }

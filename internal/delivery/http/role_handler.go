@@ -27,6 +27,13 @@ func NewRoleHandler(uc usecases.RoleUsecase) RoleHandler {
 	}
 }
 
+// GetAllRoles godoc
+// @Summary Get all Roles
+// @Description Get all Roles
+// @Tags Role
+// @Produce json
+// @Success 200 {array} models.RoleList
+// @Router /cms/user [get]
 func (h *roleHandler) GetAllRoles(c *gin.Context) {
 	roles, err := h.RoleUc.GetAllRoles()
 	if err != nil {
@@ -37,6 +44,18 @@ func (h *roleHandler) GetAllRoles(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"roles": roles})
 }
 
+// FindByRoleID godoc
+// @Summary Get Role by id
+// @Description Get Role by id
+// @Tags Role
+// @Produce json
+// @Param Authorization header string true "Authorization. How to input in swagger : 'Bearer <insert_your_token_here>'"
+// @Param id path string true "Role ID"
+// @Success 200 {object} models.Role
+// @Failure 400 {object} map[string]interface{}
+// @Failure 404 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /cms/role/{id} [get]
 func (h *roleHandler) GetRoleByID(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -53,16 +72,16 @@ func (h *roleHandler) GetRoleByID(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"role": role})
 }
 
-// Godoc
+// CreateRole godoc
 // @Summary Create role
 // @Description Create role
 // @Tags Role
 // @Accept json
 // @Produce json
-// @Param name string true "Create role"
+// @Param name body string true "Input role name"
 // @Success 201 {object} models.Role
-// @Failure 400 {object} models.Error
-// @Failure 500 {object} models.Error
+// @Failure 400 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
 func (h *roleHandler) CreateRole(c *gin.Context) {
 	var input models.Role
 

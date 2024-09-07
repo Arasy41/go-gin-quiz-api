@@ -32,8 +32,8 @@ func NewAuthHandler(uc usecases.UserUsecase) AuthHandler {
 }
 
 // LoginUser godoc
-// @Summary Login as as user.
-// @Description Logging in to get jwt token to access admin or user api by roles.
+// @Summary Login as user.
+// @Description Logging in to get jwt token to access admin or user API by roles.
 // @Tags Auth
 // @Param Body body models.LoginRequest true "the body to login a user"
 // @Produce json
@@ -80,14 +80,17 @@ func (h *authHandler) Login(c *gin.Context) {
 
 // RegisterUser godoc
 // @Summary Register as user
-// @Description Register a user
+// @Description Register a new user to the system with username, email, password, and role name.
 // @Tags Auth
 // @Accept json
 // @Produce json
-// @Param Body body models.User true "the body to register a user"
+// @Param username body string true "Username for the new user"
+// @Param email body string true "Email address for the new user"
+// @Param password body string true "Password for the new user (8-32 characters)"
+// @Param role_name body string true "Role name for the new user (e.g., 'user', 'admin')"
 // @Success 201 {object} models.User
-// @Failure 400 {object} models.Error
-// @Failure 500 {object} models.Error
+// @Failure 400 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
 // @Router /api/auth/register [post]
 func (h *authHandler) Register(c *gin.Context) {
 	var input struct {
@@ -143,11 +146,26 @@ func (h *authHandler) Register(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{"user": user})
 }
 
+// ChangePassword godoc
+// @Summary ChangePassword as user
+// @Description This API is for change passsword user
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "Bearer Token"
+// @Param old_password body string true "Old password from user data"
+// @Param new_password body string true "New Password for user""
+// @Success 201 {string} Password changed susccesfully
+// @Failure 400 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /api/auth/change-password [post]
 func (h *authHandler) ChangePassword(c *gin.Context) {
-	var input struct {
+	type ChangePasswordInput struct {
 		OldPassword string `json:"old_password" binding:"required"`
 		NewPassword string `json:"new_password" binding:"required"`
 	}
+
+	var input ChangePasswordInput
 
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

@@ -34,7 +34,7 @@ func NewUserHandler(uc usecases.UserUsecase) UserHandler {
 // @Description Get all users
 // @Tags users
 // @Produce json
-// @Success 200 {array} models.User
+// @Success 200 {array} models.UserList
 // @Router /cms/user [get]
 func (h *userHandler) GetAllUsers(c *gin.Context) {
 	users, err := h.UserUc.GetAllUsers()
@@ -168,7 +168,18 @@ func (h *userHandler) UpdateUser(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"user": user})
 }
 
-// Delete user
+// DeleteUser godoc
+// @Summary Delete user
+// @Description Delete user by user ID
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "Authorization. How to input in swagger : 'Bearer <insert_your_token_here>'"
+// @Param id path string true "User ID"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /cms/user/{id} [delete]
 func (h *userHandler) DeleteUser(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
