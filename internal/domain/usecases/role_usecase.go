@@ -6,6 +6,7 @@ import (
 
 	"github.com/Arasy41/go-gin-quiz-api/internal/domain/models"
 	"github.com/Arasy41/go-gin-quiz-api/internal/domain/repositories"
+	"gorm.io/gorm"
 )
 
 type RoleUsecase interface {
@@ -27,8 +28,15 @@ func NewRoleUsecase(repo repositories.RoleRepository) RoleUsecase {
 
 func (u *roleUsecase) CreateRole(req *models.Role) (*models.Role, error) {
 	role := &models.Role{
+		ID:        req.ID,
 		Name:      req.Name,
 		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+		DeletedAt: gorm.DeletedAt{},
+	}
+
+	if req.Name == "" {
+		return nil, errors.New("role name is required")
 	}
 	return u.roleRepo.Create(role)
 }
@@ -37,6 +45,7 @@ func (u *roleUsecase) UpdateRole(role *models.Role) (*models.Role, error) {
 	if role.ID == 0 {
 		return nil, errors.New("role id is required")
 	}
+
 	return u.roleRepo.Update(role)
 }
 

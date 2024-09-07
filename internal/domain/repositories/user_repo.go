@@ -1,6 +1,8 @@
 package repositories
 
 import (
+	"errors"
+
 	"github.com/Arasy41/go-gin-quiz-api/internal/domain/models"
 	"gorm.io/gorm"
 )
@@ -33,7 +35,7 @@ func (ur *userRepository) CreateUser(user *models.User) (*models.User, error) {
 }
 
 func (ur *userRepository) UpdateUser(user *models.User) (*models.User, error) {
-	err := ur.DB.Save(user).Error
+	err := ur.DB.Model(user).Updates(user).Error
 	if err != nil {
 		return nil, err
 	}
@@ -49,12 +51,18 @@ func (ur *userRepository) DeleteUser(user *models.User) error {
 }
 
 func (ur *userRepository) FindUserByID(id uint) (*models.User, error) {
-	user := &models.User{}
-	err := ur.DB.Preload("Role").First(user, id).Error
+	var user models.User
+
+	// Aktifkan debug untuk melihat query yang dijalankan
+	err := ur.DB.Debug().Preload("Role").Where("id = ?", id).First(&user).Error
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
 		return nil, err
 	}
-	return user, nil
+
+	return &user, nil
 }
 
 func (ur *userRepository) FindUserByUsername(username string) (*models.User, error) {
@@ -77,7 +85,7 @@ func (ur *userRepository) FindUserByEmail(email string) (*models.User, error) {
 
 func (ur *userRepository) FindAllUsers() ([]models.User, error) {
 	users := []models.User{}
-	err := ur.DB.Find(&users).Error
+	err := ur.DB.Preload("Role").Find(&users).Error
 	if err != nil {
 		return nil, err
 	}

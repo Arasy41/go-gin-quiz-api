@@ -53,7 +53,16 @@ func (h *roleHandler) GetRoleByID(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"role": role})
 }
 
-// Create Role
+// Godoc
+// @Summary Create role
+// @Description Create role
+// @Tags Role
+// @Accept json
+// @Produce json
+// @Param name string true "Create role"
+// @Success 201 {object} models.Role
+// @Failure 400 {object} models.Error
+// @Failure 500 {object} models.Error
 func (h *roleHandler) CreateRole(c *gin.Context) {
 	var input models.Role
 

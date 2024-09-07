@@ -24,6 +24,7 @@ func NewRoleRepository(db *gorm.DB) RoleRepository {
 
 func (r *roleRepository) Create(role *models.Role) (*models.Role, error) {
 	err := r.DB.Create(role).Error
+	
 	if err != nil {
 		return nil, err
 	}

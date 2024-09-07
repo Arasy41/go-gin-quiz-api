@@ -31,12 +31,13 @@ func RequestLogger() gin.HandlerFunc {
 		path := c.Request.URL.Path
 
 		// Log informasi request
-		log.Printf("| %3d | %13v | %15s | %-7s  %#v\n",
+		log.Printf("| %3d | %13v | %15s | %-7s  %#v | message : %s\n",
 			statusCode,
 			latency,
 			clientIP,
 			method,
 			path,
+			c.Errors.ByType(gin.ErrorTypePrivate).String(),
 		)
 
 		// Jika status code menunjukkan success, log sebagai info
