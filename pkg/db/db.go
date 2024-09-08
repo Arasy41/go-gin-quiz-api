@@ -18,9 +18,12 @@ func InitDB(cfg *config.Config) {
 	// Add AutoMigrate or other database initialization steps here if needed
 	DB.AutoMigrate(
 		&models.User{},
+		&models.Role{},
 		&models.Quiz{},
 		&models.Question{},
-		&models.Role{},
+		&models.Option{},
+		&models.Participant{},
+		&models.Answer{},
 	)
 
 	log.Println("Database initialized successfully")
