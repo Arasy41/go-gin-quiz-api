@@ -21,6 +21,7 @@ func InitDB(cfg *config.Config) {
 		&models.Role{},
 		&models.Quiz{},
 		&models.Question{},
+		&models.Category{},
 		&models.Option{},
 		&models.Participant{},
 		&models.Answer{},
