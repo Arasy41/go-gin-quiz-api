@@ -234,6 +234,6 @@ func defineRoles(role string) (uint, error) {
 	case constant.RoleTeacher:
 		return constant.RoleTeacherID, err
 	default:
-		return 0, errors.New("Invalid role name")
+		return 0, errors.New("invalid role name")
 	}
 }

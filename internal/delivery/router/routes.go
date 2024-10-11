@@ -38,11 +38,13 @@ func InitRouter(db *gorm.DB) *gin.Engine {
 	// Initialize usecases
 	userUsecase := usecases.NewUserUsecase(repositories.NewUserRepository(db))
 	roleUsecase := usecases.NewRoleUsecase(repositories.NewRoleRepository(db))
+	categoryUc := usecases.NewCategoryUsecase(repositories.NewCategoryRepository(db))
 
 	// Initialize handlers
 	userHandler := http.NewUserHandler(userUsecase)
 	authHandler := http.NewAuthHandler(userUsecase)
 	roleHandler := http.NewRoleHandler(roleUsecase)
+	categoryHandler := http.NewCategoryHandler(categoryUc)
 
 	// Routes for Admin
 	adminRoute := r.Group("/cms", middleware.JWTAuthMiddleware(db, constant.RoleAdmin))
@@ -60,6 +62,14 @@ func InitRouter(db *gorm.DB) *gin.Engine {
 		adminRoute.POST("/role", roleHandler.CreateRole)
 		adminRoute.PUT("/role/:id", roleHandler.UpdateRole)
 		adminRoute.DELETE("/role/:id", roleHandler.DeleteRole)
+
+		// Category Admin Routes
+		adminRoute.GET("/categories", categoryHandler.GetAllCategories)
+		adminRoute.GET("/category/:id", categoryHandler.GetCategoryByID)
+		adminRoute.GET("/category/:name", categoryHandler.GetCategoryByName)
+		adminRoute.POST("/category", categoryHandler.CreateCategory)
+		adminRoute.PUT("/category/:id", categoryHandler.UpdateCategory)
+		adminRoute.DELETE("/category/:id", categoryHandler.DeleteCategory)
 	}
 
 	// Auth Routes

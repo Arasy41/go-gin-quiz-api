@@ -52,9 +52,8 @@ func (ur *userRepository) DeleteUser(user *models.User) error {
 
 func (ur *userRepository) FindUserByID(id uint) (*models.User, error) {
 	var user models.User
-
-	// Aktifkan debug untuk melihat query yang dijalankan
-	err := ur.DB.Debug().Preload("Role").Where("id = ?", id).First(&user).Error
+	
+	err := ur.DB.Preload("Role").Where("id = ?", id).First(&user).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
