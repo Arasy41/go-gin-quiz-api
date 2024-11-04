@@ -65,13 +65,13 @@ func (u *roleUsecase) GetRoleByName(rolename string) (*models.Role, error) {
 }
 
 func (u *roleUsecase) GetAllRoles() ([]models.RoleList, error) {
-	user, err := u.roleRepo.FindAllRoles()
+	role, err := u.roleRepo.FindAllRoles()
 	if err != nil {
 		return nil, err
 	}
 
 	roles := []models.RoleList{}
-	for _, r := range user {
+	for _, r := range role {
 		roles = append(roles, models.RoleList{
 			ID:   r.ID,
 			Name: r.Name,
